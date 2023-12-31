@@ -1,25 +1,46 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
 
-function App() {
+import React, { useReducer, useState } from 'react';
+import ProductForm from './ProductForm';
+import ProductList from './ProductList';
+import Cart from './Cart';
+import { ProductContext } from './ProductContext';
+
+const initialState = {
+  products: [],
+  cart: [],
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'ADD_PRODUCT':
+      return { ...state, products: [...state.products, action.payload] };
+    case 'ADD_TO_CART':
+      return { ...state, cart: [...state.cart, action.payload] };
+    default:
+      return state;
+  }
+};
+
+const App = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [showCart, setShowCart] = useState(false);
+
+  const handleToggleCart = () => {
+    setShowCart(!showCart);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ProductContext.Provider value={{ state, dispatch }}>
+      <div>
+        <h1>Medicine's Management App</h1>
+        <ProductForm />
+        <ProductList />
+        <button onClick={handleToggleCart}>Show Cart</button>
+        {showCart && <Cart />}
+      </div>
+    </ProductContext.Provider>
   );
-}
+};
 
 export default App;
